@@ -14,11 +14,16 @@ import { Response, Request } from 'express';
 export type UserCreateBody = {
   at: string;
   email: string;
+  followers: Array<any>;
+  following: Array<any>;
   login: string;
   password: string;
   profilepic: string;
   username: string;
 };
+
+export const getLoggedUserReference = (res: Response) =>
+  doc(db, `users/${res.locals.userId}`);
 
 type ValidateBodyParams = {
   body: UserCreateBody;
@@ -45,6 +50,9 @@ const validateBody = async ({
   const { docs: emailDocs } = await getDocs(
     query(userCollection, where('email', '==', email)),
   );
+
+  console.log(emailDocs);
+
   const isEmailRegistered = !!emailDocs.length;
 
   if (isCreation && isEmailRegistered) {
@@ -110,7 +118,7 @@ const validateBody = async ({
   }
 };
 
-class UserController {
+export class UserController {
   async create(req: Request<any, any, UserCreateBody>, res: Response) {
     const hasError = await validateBody({ body: req.body, res });
     if (hasError) {
@@ -141,7 +149,7 @@ class UserController {
     const userDoc = doc(db, 'users', req.params.userId);
     await updateDoc(userDoc, req.body);
     return res
-      .status(201)
+      .status(202)
       .json({ success: `User ${req.params.userId} updated.` });
   }
 
@@ -153,7 +161,44 @@ class UserController {
     }
     const document = doc(db, `users/${req.params.id}`);
     await deleteDoc(document);
-    return res.status(200).json({ message: 'Account deleted.' });
+    return res.status(202).json({ success: 'Account deleted.' });
+  }
+
+  async getMyFollowers(req: Request<any, any, UserCreateBody>, res: Response) {
+    const { docs: followersDocs } = await getDocs(
+      query(
+        userCollection,
+        where(
+          'following',
+          'array-contains',
+          doc(db, `users/${res.locals.userId}`),
+        ),
+      ),
+    );
+
+    const followed = followersDocs.map(doc => ({ ...doc.data(), id: doc.id }));
+
+    return res.json({ followed });
+  }
+
+  async getWhoImFollowing(
+    req: Request<any, any, UserCreateBody>,
+    res: Response,
+  ) {
+    const { docs: followingDocs } = await getDocs(
+      query(
+        userCollection,
+        where(
+          'followers',
+          'array-contains',
+          doc(db, `users/${res.locals.userId}`),
+        ),
+      ),
+    );
+
+    const following = followingDocs.map(doc => ({ ...doc.data(), id: doc.id }));
+
+    return res.json({ following });
   }
 }
 

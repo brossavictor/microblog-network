@@ -8,7 +8,6 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { db } from '../../config/firebaseconfig';
 import { Response, Request } from 'express';
 import { userCollection, UserCreateBody } from './user-controller';
 import { sign } from 'jsonwebtoken';
