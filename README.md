@@ -8,6 +8,7 @@ BACK-END:
 🛠 Technologies
 
 The back-end was done with <img src="https://miro.medium.com/max/816/1*mn6bOs7s6Qbao15PMNRyOA.png" width="16" height="16" alt="ts logo"/> Typescript.
+</br>
 The database of choice was <img src="https://cdn.cdnlogo.com/logos/f/48/firebase.svg" width="16" height="16" alt="twitter logo"/> Google Firebase.
 
 ⚙ Functions
@@ -29,8 +30,10 @@ For now, there is no feature to update uploads. It may be added in the future.
 🔐 LogIn
 
 The application offers security to the users. Only the user can upload from their account, delete posts or even delete their own account. For this, theres always a unique login and password.
+</br>
 To achieve this an authentication JSON web token is needed in order to do all actions. The cryptography put in place will assure security in all aspects.
 
+</br>
 
 FRONT-END:
 
